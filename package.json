@@ -1,0 +1,26 @@
+{
+  "name": "saferide-sos",
+  "version": "1.0.0",
+  "private": true,
+  "description": "SafeRide SOS — IoT SOS monitoring for women's safety in cabs (MVP)",
+  "workspaces": [
+    "functions",
+    "web"
+  ],
+  "scripts": {
+    "install:all": "npm install",
+    "dev:web": "npm run dev -w web",
+    "build:web": "npm run build -w web",
+    "build:functions": "npm run build -w functions",
+    "serve:functions": "npm run serve -w functions",
+    "lint": "npm run lint -w functions && npm run lint -w web",
+    "demo": "npm run build:functions && npm run dev:web",
+    "deploy": "npm run build:web && npm run build:functions && firebase deploy"
+  },
+  "engines": {
+    "node": "22"
+  },
+  "devDependencies": {
+    "firebase-tools": "^13.0.0"
+  }
+}

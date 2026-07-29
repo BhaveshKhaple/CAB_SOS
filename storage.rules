@@ -1,0 +1,14 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    function isOperator() {
+      return request.auth != null
+        && firestore.get(/databases/$(database)/documents/admins/$(request.auth.uid)).role in ['operator','supervisor','admin'];
+    }
+
+    match /evidence/{allPaths=**} {
+      allow read: if request.auth != null && request.time < resource.metadata.signedUrlExpiry;
+      allow write: if isOperator();
+    }
+  }
+}
