@@ -21,7 +21,9 @@ export const ingestSos = onRequest(
 
     const canonical = `${deviceId}|${vehicleId}|${location.lat}|${location.lng}|${triggeredAt}`;
     const expected = createHmac('sha256', HMAC_SECRET).update(canonical).digest('hex');
-    if (!timingSafeEqual(Buffer.from(signature), Buffer.from(expected))) {
+    const sigBuf = Buffer.from(signature);
+    const expBuf = Buffer.from(expected);
+    if (sigBuf.length !== expBuf.length || !timingSafeEqual(sigBuf, expBuf)) {
       res.status(401).json({ error: 'BAD_SIGNATURE' });
       return;
     }
@@ -47,11 +49,11 @@ export const ingestSos = onRequest(
       signalDbm: req.body.signalDbm ?? null,
     });
 
-    await db.collection('trips').doc(tripId).update({
+    await db.collection('trips').doc(tripId).set({
       status: 'sos_triggered',
       sosAlertId: alertRef.id,
       updatedAt: FieldValue.serverTimestamp(),
-    });
+    }, { merge: true });
 
     await auditLog({
       actorId: deviceId,

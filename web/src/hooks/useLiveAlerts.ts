@@ -64,8 +64,8 @@ export function useAllAlerts(limitDays = 7) {
         items.push({
           id: doc.id,
           ...d,
-          triggeredAt: d.triggeredAt?.toDate?.(),
-          escalationDeadlineAt: d.escalationDeadlineAt?.toDate?.(),
+          triggeredAt: d.triggeredAt?.toDate?.() ?? new Date(),
+          escalationDeadlineAt: d.escalationDeadlineAt?.toDate?.() ?? new Date(),
           verifiedAt: d.verifiedAt?.toDate?.(),
           acknowledgedAt: d.acknowledgedAt?.toDate?.(),
           escalatedAt: d.escalatedAt?.toDate?.(),

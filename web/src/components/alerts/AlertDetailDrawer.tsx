@@ -14,11 +14,15 @@ export function AlertDetailDrawer({ alert, onClose }: { alert: SosAlert; onClose
   const [note, setNote] = useState('');
   const [busy, setBusy] = useState(false);
   const [evidenceUrl, setEvidenceUrl] = useState<string | null>(null);
+  const [actionError, setActionError] = useState<string | null>(null);
 
   const callFn = async (name: string, payload: Record<string, unknown>) => {
     setBusy(true);
+    setActionError(null);
     try {
       await httpsCallable(functions, name)(payload);
+    } catch (err: any) {
+      setActionError(err?.message ?? 'Action failed');
     } finally {
       setBusy(false);
     }
@@ -80,8 +84,13 @@ export function AlertDetailDrawer({ alert, onClose }: { alert: SosAlert; onClose
 
       <div className="card" style={{ marginTop: 16 }}>
         <h4 style={{ marginTop: 0 }}>Operator Actions</h4>
+        {actionError && (
+          <div style={{ color: '#ffb4ab', background: 'rgba(147,0,10,0.3)', border: '1px solid var(--accent)', borderRadius: 'var(--radius-md)', padding: '0.5rem 0.75rem', marginBottom: 8, fontSize: '0.85rem' }}>
+            {actionError}
+          </div>
+        )}
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
-          {alert.status === 'new' && (
+          {(alert.status === 'new' || alert.status === 'escalated') && (
             <button className="btn btn-info" disabled={busy} onClick={() => callFn('markAcknowledged', { alertId: alert.id })}>
               Acknowledge
             </button>

@@ -19,16 +19,20 @@ export function SimulatorPanel() {
   const startTrip = async () => {
     setBusy(true);
     const id = `trip-${Date.now()}`;
-    setTripId(id);
-    await setDoc(doc(db, 'trips', id), {
-      vehicleId: VEHICLE_ID,
-      driverId: DRIVER_ID,
-      passengerRef: PASSENGER_REF,
-      startTime: serverTimestamp(),
-      status: 'ongoing',
-      route: [],
-    });
-    log(`Started trip ${id}`);
+    try {
+      await setDoc(doc(db, 'trips', id), {
+        vehicleId: VEHICLE_ID,
+        driverId: DRIVER_ID,
+        passengerRef: PASSENGER_REF,
+        startTime: serverTimestamp(),
+        status: 'ongoing',
+        route: [],
+      });
+      setTripId(id);
+      log(`Started trip ${id}`);
+    } catch (err: any) {
+      log(`Start trip failed: ${err.message}`);
+    }
     setBusy(false);
   };
 
@@ -53,9 +57,13 @@ export function SimulatorPanel() {
   const cancelSos = async () => {
     if (!alertId) return;
     setBusy(true);
-    await updateDoc(doc(db, 'sos_alerts', alertId), { status: 'cancelled', cancelledAt: serverTimestamp() });
-    log(`Cancelled alert ${alertId}`);
-    setAlertId(null);
+    try {
+      await updateDoc(doc(db, 'sos_alerts', alertId), { status: 'cancelled', cancelledAt: serverTimestamp() });
+      log(`Cancelled alert ${alertId}`);
+      setAlertId(null);
+    } catch (err: any) {
+      log(`Cancel SOS failed: ${err.message}`);
+    }
     setBusy(false);
   };
 
@@ -67,13 +75,21 @@ export function SimulatorPanel() {
   };
 
   const goOffline = async () => {
-    await updateDoc(doc(db, 'vehicles', VEHICLE_ID), { status: 'offline', lastSeenAt: serverTimestamp() });
-    log('Vehicle went offline');
+    try {
+      await setDoc(doc(db, 'vehicles', VEHICLE_ID), { status: 'offline', lastSeenAt: serverTimestamp() }, { merge: true });
+      log('Vehicle went offline');
+    } catch (err: any) {
+      log(`Go offline failed: ${err.message}`);
+    }
   };
 
   const goOnline = async () => {
-    await updateDoc(doc(db, 'vehicles', VEHICLE_ID), { status: 'online', lastSeenAt: serverTimestamp() });
-    log('Vehicle came online');
+    try {
+      await setDoc(doc(db, 'vehicles', VEHICLE_ID), { status: 'online', lastSeenAt: serverTimestamp() }, { merge: true });
+      log('Vehicle came online');
+    } catch (err: any) {
+      log(`Go online failed: ${err.message}`);
+    }
   };
 
   return (

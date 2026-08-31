@@ -46,7 +46,9 @@ export const markAcknowledged = onCall({ cors: ['*'] }, async (request) => {
 });
 
 export const markEscalated = onCall({ cors: ['*'] }, async (request) => {
+  requireAuth(request.auth);
   const { alertId } = request.data as { alertId: string };
+  if (!alertId || typeof alertId !== 'string') throw new HttpsError('invalid-argument', 'alertId required');
   const alert = await getAlert(alertId);
   const data = alert.data() as { status: AlertStatus };
   if (!['new', 'acknowledged'].includes(data.status)) return { ok: false, reason: 'already_handled' };

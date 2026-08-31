@@ -34,11 +34,11 @@ export const simulateSos = onCall({ cors: ['*'] }, async (request) => {
     escalationDeadlineAt: Timestamp.fromMillis(Date.now() + escalateAfter),
   });
 
-  await db.collection('trips').doc(tripId).update({
+  await db.collection('trips').doc(tripId).set({
     status: 'sos_triggered',
     sosAlertId: alertRef.id,
     updatedAt: FieldValue.serverTimestamp(),
-  });
+  }, { merge: true });
 
   // Create a placeholder evidence doc so the dashboard can demo signed-URL playback.
   const evidenceRef = db.collection('evidence').doc();
