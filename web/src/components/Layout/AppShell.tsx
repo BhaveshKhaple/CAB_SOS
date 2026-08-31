@@ -201,7 +201,7 @@ export function AppShell() {
                 </NavLink>
               ))}
 
-              {hasRole(['admin']) && (
+              {hasRole(['operator', 'supervisor', 'admin']) && (
                 <NavLink
                   to="/sim"
                   style={({ isActive }) => ({

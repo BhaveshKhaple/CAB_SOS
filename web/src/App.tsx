@@ -25,7 +25,7 @@ function App() {
             <Route
               path="/sim"
               element={
-                <RoleGuard allow={['admin']}>
+                <RoleGuard allow={['operator', 'supervisor', 'admin']}>
                   <SimPage />
                 </RoleGuard>
               }

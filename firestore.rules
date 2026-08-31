@@ -19,7 +19,7 @@ service cloud.firestore {
 
     match /sos_alerts/{alertId} {
       allow read: if isOperator();
-      allow create: if false;
+      allow create: if isAdmin();
       allow update: if isOperator()
         && request.resource.data.status in ['acknowledged','escalated','verified','false_alarm','closed','cancelled'];
       allow delete: if false;
