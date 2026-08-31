@@ -24,8 +24,8 @@ export function AppShell() {
   useEscalationWatcher();
 
   useEffect(() => {
-    if (!loading && !user) navigate('/login', { replace: true });
-  }, [loading, user, navigate]);
+    if (!loading && (!user || !admin)) navigate('/login', { replace: true });
+  }, [loading, user, admin, navigate]);
 
   if (loading) return <div className="loading">Initializing Sentinel Protocol…</div>;
   if (!user || !admin) return null;
