@@ -3,7 +3,7 @@ service firebase.storage {
   match /b/{bucket}/o {
     function isOperator() {
       return request.auth != null
-        && firestore.get(/databases/$(database)/documents/admins/$(request.auth.uid)).role in ['operator','supervisor','admin'];
+        && firestore.get(/databases/(default)/documents/admins/$(request.auth.uid)).data.role in ['operator','supervisor','admin'];
     }
 
     match /evidence/{allPaths=**} {
